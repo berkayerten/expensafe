@@ -1,0 +1,15 @@
+
+spring:
+  application:
+    name: expensafe
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_DB_HOST:localhost}:${POSTGRES_DB_PORT:5423}/${POSTGRES_DB_NAME:mydb}
+    username: ${POSTGRES_DB_USER:myuser}
+    password: ${POSTGRES_DB_PASSWORD:mypass}
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+server:
+  port: 8185
