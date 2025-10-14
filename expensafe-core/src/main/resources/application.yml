@@ -1,7 +1,6 @@
-
 spring:
   application:
-    name: expensafe
+    name: expensafe-core
   datasource:
     url: jdbc:postgresql://${POSTGRES_DB_HOST:localhost}:${POSTGRES_DB_PORT:5423}/${POSTGRES_DB_NAME:mydb}
     username: ${POSTGRES_DB_USER:myuser}
@@ -9,7 +8,13 @@ spring:
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 server:
   port: 8185
+
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:8082   # Vue running on
+      - http://localhost:5173   # Vue dev server
