@@ -41,9 +41,16 @@
         <div class="budget-header">
           <span>Monthly Budget</span>
           <br>
-          <span class="budget-left">{{ currencify(budgetLeft) }} left</span>
         </div>
         <div class="budget-amount">{{ currencify(budget) }}</div>
+        <div class="budget-remaining">
+          <span class="budget-left">{{ currencify(budgetLeft) }} left
+          </span>
+        </div>
+        <div class="budget-estimate">
+          <span class="month-end-estimate">Estimated spend by month end: {{ currencify(this.estimates.weightedWithHistoricalAdjustment) }}
+          </span>
+        </div>
       </template>
     </UILibCard>
 
@@ -94,8 +101,13 @@ export default {
       budget: 400.0,
       spent: 64.19,
       showModal: false,
+      estimates: {
+        naiveEstimate: 0.00,
+        weightedEstimate: 0.00,
+        weightedWithHistoricalAdjustment: 0.00
+      },
       newReceipt: {date: "", store: "", amount: null, expenseCategoryId: this.$route.params.id},
-      stores: ["Lidl", "ALDI", "REWE", "Edeka", "Penny", "Rossmann", "Budnikowsky","MARKANT", "Other"],
+      stores: ["Lidl", "ALDI", "REWE", "Edeka", "Penny", "Rossmann", "LindenBazar" ,"MARKANT", "TK Maxx", "Budni", "Other"],
       chartData: {
         labels: [],
         datasets: [
@@ -145,14 +157,15 @@ export default {
     async fetchExpensesByCategory(categoryId) {
       try {
         const res = await axios.get(`http://localhost:8185/api/v1/expenses?categoryId=${categoryId}`, {
-          headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
+          headers: {Authorization : `Bearer ${localStorage.getItem("token")}`}
         });
-        this.receipts = (res.data.content || []).map(r => ({
+        this.receipts = (res.data.expenses.content || []).map(r => ({
           id: r.id,
           date: r.date,
           store: r.store,
           amount: r.amount ?? r.price
         }));
+        this.estimates = res.data.estimates;
         this.spent = this.receipts.reduce((sum, r) => sum + Number(r.amount), 0);
         this.updateChart();
       } catch (e) {

@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static java.util.UUID.fromString;
 
@@ -15,11 +16,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     private final ExpenseRepository expenseRepository;
     private final ExpenseCategoryRepository expenseCategoryRepository;
+    private final EstimateCalculator estimateCalculator;
 
     public ExpenseServiceImpl(ExpenseRepository expenseRepository,
-            ExpenseCategoryRepository expenseCategoryRepository) {
+            ExpenseCategoryRepository expenseCategoryRepository,
+            EstimateCalculator estimateCalculator) {
         this.expenseRepository = expenseRepository;
         this.expenseCategoryRepository = expenseCategoryRepository;
+        this.estimateCalculator = estimateCalculator;
     }
 
     public Page<Expense> list(String expenseCategoryId, Pageable pageable) {
@@ -34,6 +38,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .map(this::toDto);
     }
 
+    @Transactional
     public Expense save(Expense expense) {
         if (expense.expenseCategoryId() == null) {
             throw new IllegalArgumentException("Expense category cannot be empty");
@@ -48,6 +53,13 @@ public class ExpenseServiceImpl implements ExpenseService {
         BigDecimal totalSpentInCategory = expenseRepository.sumTotalAmountByExpenseCategoryEntity_Id(
                 expenseCategoryId.toString());
         return totalSpentInCategory != null ? totalSpentInCategory : new BigDecimal(0);
+    }
+
+    @Override
+    public ExpenseListResponse listWithEstimates(String expenseCategoryId, Pageable pageable) {
+        Page<Expense> expenses = list(expenseCategoryId, pageable);
+        MonthlyEstimates estimates = estimateCalculator.calculateEstimates(expenseCategoryId);
+        return new ExpenseListResponse(expenses, estimates);
     }
 
     private ExpenseEntity toEntity(Expense expense) {

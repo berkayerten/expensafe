@@ -41,8 +41,8 @@ public class ExpenseController {
     }
 
     @GetMapping(params = "categoryId")
-    public ResponseEntity<Page<Expense>> list(@RequestParam(name = "categoryId") String expenseCategoryId,
-            @PageableDefault(value = 30) Pageable pageable) {
-        return ResponseEntity.ok(service.list(expenseCategoryId, pageable));
+    public ResponseEntity<ExpenseListResponse> list(@RequestParam(name = "categoryId") String expenseCategoryId,
+            @PageableDefault(value = 50) Pageable pageable) {
+        return ResponseEntity.ok(service.listWithEstimates(expenseCategoryId, pageable));
     }
 }

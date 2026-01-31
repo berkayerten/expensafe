@@ -45,8 +45,15 @@
         </div>
         <div class="form-field">
           <label for="category-budget">Budget</label>
-          <UILibInputNumber id="category-budget" v-model="newCategory.budget" mode="currency" currency="USD"
-                            locale="en-US"/>
+          <UILibInputNumber
+              id="category-budget"
+              v-model="newCategory.budget"
+              mode="currency"
+              currency="EUR"
+              locale="en-US"
+              variant="filled"
+              :min="0"
+              :step="0.01"/>
         </div>
         <div class="form-field-checkbox">
           <UILibCheckbox v-model="newCategory.favorite" inputId="category-favorite" :binary="true"/>

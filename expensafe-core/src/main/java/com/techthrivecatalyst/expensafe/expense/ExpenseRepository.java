@@ -24,4 +24,22 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, String> 
             "FROM ExpenseEntity e " +
             "WHERE e.expenseCategoryEntity.id = :expenseCategoryId")
     BigDecimal sumTotalAmountByExpenseCategoryEntity_Id(String expenseCategoryId);
+
+    @Query("SELECT SUM(e.price) " +
+            "FROM ExpenseEntity e " +
+            "WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month AND e.expenseCategoryEntity.id = :categoryId")
+    BigDecimal sumByYearAndMonth(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("categoryId") String categoryId
+    );
+
+    @Query("SELECT SUM(e.price) " +
+            "FROM ExpenseEntity e " +
+            "WHERE e.date >= :startDate AND e.date <= :endDate AND e.expenseCategoryEntity.id = :categoryId")
+    BigDecimal sumByDateRangeAndCategory(
+            @Param("startDate") java.time.LocalDate startDate,
+            @Param("endDate") java.time.LocalDate endDate,
+            @Param("categoryId") String categoryId
+    );
 }

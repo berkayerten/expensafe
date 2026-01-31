@@ -9,6 +9,8 @@ public interface ExpenseService {
 
     Page<Expense> list(String expenseCategoryId, Pageable pageable);
 
+    ExpenseListResponse listWithEstimates(String expenseCategoryId, Pageable pageable);
+
     Expense save(Expense expense);
 
     BigDecimal getTotalAmountSpentInCategory(UUID expenseCategoryId);
